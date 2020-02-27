@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import axios from 'axios';
+import User from './user/user';
+import { Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Card from 'react-bootstrap/Card';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+	const [ users, updateUser ] = useState([]);
+	// Make a request for a user with a given ID
+	const getUserHandler = () => {
+		axios
+			.get('https://reqres.in/api/users?page=2')
+			.then((response) => {
+				// handle success
+				console.log(response.data.data);
+
+				const data = response.data.data;
+				updateUser(data);
+			})
+			.catch((error) => {
+				// handle error
+				console.log(error);
+			});
+	};
+
+	const person = users.map((user) => {
+		return (
+			<User key={user.id} link={user.avatar} first={user.first_name} last={user.last_name} email={user.email} />
+		);
+	});
+	return (
+		<div className="App">
+			<header className="App-header">
+				<Button variant="secondary" size="lg" onClick={getUserHandler}>
+					Get Users
+				</Button>
+				{person}
+			</header>
+		</div>
+	);
+};
 
 export default App;
